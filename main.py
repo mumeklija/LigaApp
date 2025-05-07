@@ -24,6 +24,7 @@ class LigaAplikacija:
         self.root.state("zoomed")
         self.root.configure(bg="#9fbd9d")
 
+        self.root.grid_propagate(False)
         
 
         self.klubovi = []
@@ -51,29 +52,37 @@ class LigaAplikacija:
 
         # Gornji dio: Unos kluba i gumbovi za save itd 
         self.entry_klub = tb.Entry(self.root, width=40)
-        self.entry_klub.grid(row=0, column=0, padx=(10, 5), pady=10, sticky="w")  # Smanjen desni padding
+        self.entry_klub.grid(row=0, column=0, padx=(10, 5), pady=10, sticky="w")
         self.entry_klub.bind("<Return>", lambda event: self.dodaj_klub())
+        self.entry_klub.grid_propagate(False)
 
         self.btn_dodaj_klub = tb.Button(self.root, text="Dodaj klub", command=self.dodaj_klub, bootstyle="success", width=15)
-        self.btn_dodaj_klub.grid(row=0, column=0, padx=200, pady=10, sticky="w")  
+        self.btn_dodaj_klub.grid(row=0, column=0, padx=200, pady=10, sticky="w")
+        self.btn_dodaj_klub.grid_propagate(False)  
 
-        self.btn_pocni_ligu = tb.Button(self.root, text="Počni ligu", command=self.pocni_ligu, bootstyle="primary", width=40)
+        self.btn_pocni_ligu = tb.Button(self.root, text="Počni ligu", command=self.pocni_ligu, bootstyle="primary", width=30)
         self.btn_pocni_ligu.grid(row=0, column=1, padx=10, pady=10)
+        self.btn_pocni_ligu.grid_propagate(False)
 
         self.btn_undo_kolo = tb.Button(self.root, text="Undo Kolo", command=self.undo_kolo, bootstyle="warning", width=15)
         self.btn_undo_kolo.grid(row=0, column=2, padx=10, pady=10)
+        self.btn_undo_kolo.grid_propagate(False)
 
         self.btn_spremi_stanje = tb.Button(self.root, text="Spremi stanje", command=self.spremi_stanje, bootstyle="success", width=15)
-        self.btn_spremi_stanje.grid(row=0, column=3, padx=10, pady=10)
+        self.btn_spremi_stanje.grid(row=0, column=5, padx=10, pady=10)
+        self.btn_spremi_stanje.grid_propagate(False)
 
         self.btn_ucitaj_stanje = tb.Button(self.root, text="Učitaj stanje", command=self.ucitaj_stanje, bootstyle="info", width=15)
-        self.btn_ucitaj_stanje.grid(row=0, column=4, padx=10, pady=10)
+        self.btn_ucitaj_stanje.grid(row=0, column=6, padx=5, pady=10)
+        self.btn_ucitaj_stanje.grid_propagate(False)
 
         self.btn_izvezi_pdf = tb.Button(self.root, text="Izvezi raspored utakmica u PDF", command=self.izvezi_raspored_u_pdf, bootstyle="danger", width=30)
-        self.btn_izvezi_pdf.grid(row=0, column=5, padx=10, pady=10)
+        self.btn_izvezi_pdf.grid(row=0, column=3, padx=10, pady=10)
+        self.btn_izvezi_pdf.grid_propagate(False)
 
         self.btn_izvezi_tablicu_pdf = tb.Button(self.root, text="Izvezi tablicu poretka u PDF", command=self.izvezi_tablicu_u_pdf, bootstyle="dark", width=30)
-        self.btn_izvezi_tablicu_pdf.grid(row=0, column=6, padx=10, pady=10)
+        self.btn_izvezi_tablicu_pdf.grid(row=0, column=4, padx=10, pady=10)
+        self.btn_izvezi_tablicu_pdf.grid_propagate(False)
 
         # Srednji dio: Klubovi i utakmice
         self.lbl_klubovi = tb.Label(self.root, text="Klubovi:", background="#9fbd9d", font=("Helvetica", 14, "bold"))
@@ -131,10 +140,10 @@ class LigaAplikacija:
 
         # Okvir za prikaz rezultata tekućeg kola
         self.rezultati_frame = tb.Frame(self.root, style="Custom.TFrame", width=200, height=200)
-        self.rezultati_frame.grid(row=2, column=4, padx=10, pady=10, sticky="nsew")
+        self.rezultati_frame.grid(row=2, column=4, padx=10, pady=10, sticky="ns")
         self.rezultati_frame.grid_propagate(False)
 
-        self.lbl_rezultati = tb.Label(self.rezultati_frame, text="Rezultati tekućeg kola:", background="#9fbd9d", font=("Helvetica", 14, "bold"))
+        self.lbl_rezultati = tb.Label(self.rezultati_frame, text="Rezultati tekućeg kola:", background="#9fbd9d", font=("Helvetica", 14, "bold"), wraplength=200)
         self.lbl_rezultati.pack(anchor="nw", padx=5, pady=5)
         self.lbl_rezultati_lista = []
 
@@ -193,9 +202,15 @@ class LigaAplikacija:
         self.root.grid_rowconfigure(4, weight=0)  # Gumb "Spremi rezultat"
         self.root.grid_rowconfigure(5, weight=0)  # Donji dio (tablica)
 
-        self.root.grid_columnconfigure(0, weight=0)  # Klubovi
-        self.root.grid_columnconfigure(1, weight=0)  # Utakmice
-        self.root.grid_columnconfigure(2, weight=0)  # Utakmice
+        self.root.grid_columnconfigure(0, weight=0)
+        self.root.grid_columnconfigure(1, weight=0)  
+        self.root.grid_columnconfigure(2, weight=0) 
+        self.root.grid_columnconfigure(3, weight=0)
+        self.root.grid_columnconfigure(4, weight=0)
+        self.root.grid_columnconfigure(5, weight=0)
+        self.root.grid_columnconfigure(6, weight=0)
+
+        self.root.grid_columnconfigure(4, minsize=250, weight=0)  # Fiksna širina za stupac 4
 
 
 
@@ -248,11 +263,9 @@ class LigaAplikacija:
 
 
     def prikazi_klubove(self):
-        # Očisti prethodni sadržaj
         for widget in self.klub_frame.winfo_children():
             widget.destroy()
 
-        # Prikaz svakog kluba
         for klub in self.klubovi:
             lbl = tb.Label(self.klub_frame, text=klub, font=("Helvetica", 12, "bold"))
             lbl.pack(anchor="w", pady=2)
@@ -266,17 +279,16 @@ class LigaAplikacija:
 
 
 
-        #funkcija za prikazivanje utakmica, gasi gumbove nakon sto se iskoriste utakmice
+        #funkcija za prikazanje utakmica, gasi gumbove nakon sto se iskoriste utakmice
 
     def prikazi_utakmice(self):
-        # Očisti prethodni sadržaj
         for widget in self.utakmica_frame.winfo_children():
             widget.destroy()
         self.gumbovi_utakmica.clear()
 
         # Dohvati utakmice i datume za trenutno kolo
         if self.trenutno_kolo > len(self.kalendar):
-            return  # Nema više kola za prikaz
+            return 
 
         utakmice_kola = self.kalendar[self.trenutno_kolo - 1]
         datumi_kola = self.datumi[self.trenutno_kolo - 1]
@@ -290,8 +302,8 @@ class LigaAplikacija:
                 gumb = tk.Button(self.utakmica_frame, text=gumb_text,
                                 command=lambda d=domacin, g=gost: self.odaberi_utakmicu(d, g))
             
-            # Proširi gumb po cijeloj širini okvira i centriraj
-            gumb.pack(fill="x", padx=5, pady=2)  # fill="x" omogućuje širenje gumba po x osi
+            
+            gumb.pack(fill="x", padx=5, pady=2)
             self.gumbovi_utakmica[(domacin, gost)] = gumb
 
         # Ažuriraj naslov za trenutno kolo
@@ -304,7 +316,6 @@ class LigaAplikacija:
 
 
     def prikazi_pauze(self):
-        # Očisti prethodni sadržaj pod-okvira
         for widget in self.pauze_sadrzaj_frame.winfo_children():
             widget.destroy()
 
@@ -319,7 +330,6 @@ class LigaAplikacija:
     
 
     def prikazi_rezultate_kola(self):
-        # Očisti prethodni sadržaj pod-okvira
         for widget in self.rezultati_sadrzaj_frame.winfo_children():
             widget.destroy()
 
@@ -345,8 +355,7 @@ class LigaAplikacija:
 
 
     def prikazi_progress_bar(self):
-        # Prikaži progress bar
-        self.progress_bar.grid()  # Prikaži progress bar
+        self.progress_bar.grid() 
         self.progress_bar["value"] = 0
 
         # Funkcija za ažuriranje progress bara
@@ -356,8 +365,8 @@ class LigaAplikacija:
                 self.root.update_idletasks()
                 self.root.after(50, update_progress, value + 10)  # Povećaj vrijednost svakih 10ms
             else:
-                self.progress_bar.grid_remove()  # Sakrij progress bar nakon završetka
-                self.prebaci_na_iduce_kolo()  # Prebaci na iduće kolo
+                self.progress_bar.grid_remove()
+                self.prebaci_na_iduce_kolo()
 
         # Pokreni progress bar
         update_progress(0)
@@ -369,12 +378,12 @@ class LigaAplikacija:
     def prebaci_na_iduce_kolo(self):
         self.trenutno_kolo += 1
         if self.trenutno_kolo <= len(self.kalendar):
-            self.odigrano_u_kolu.clear()  # Resetiraj odigrane utakmice za novo kolo
+            self.odigrano_u_kolu.clear() 
             self.klub1 = None
             self.klub2 = None
-            self.prikazi_utakmice()  # Prikaz utakmica za novo kolo
-            self.prikazi_rezultate_kola()  # Ažuriraj rezultate za novo kolo
-            self.prikazi_tablicu()  # Ažuriraj tablicu
+            self.prikazi_utakmice() 
+            self.prikazi_rezultate_kola() 
+            self.prikazi_tablicu() 
         else:
             messagebox.showinfo("Kraj lige", "Sve utakmice su odigrane!")
             self.izvezi_tablicu_u_pdf() 
@@ -389,10 +398,10 @@ class LigaAplikacija:
             messagebox.showerror("Greška", "Trenutno kolo nije valjano za poništavanje.")
             return
 
-        # Dohvati utakmice trenutnog kola
+        
         utakmice_kola = self.kalendar[self.trenutno_kolo - 1]
 
-        # Ukloni rezultate utakmica trenutnog kola
+        # Ukloni rezultate utakmica
         for domacin, gost in utakmice_kola:
             if (domacin, gost) in self.rezultati_utakmica:
                 gol1, gol2 = self.rezultati_utakmica.pop((domacin, gost))
@@ -413,7 +422,7 @@ class LigaAplikacija:
         # Resetiraj odigrane utakmice za trenutno kolo
         self.odigrano_u_kolu.clear()
 
-        # Ažuriraj korisničko sučelje
+        # Ažuriraj
         self.prikazi_utakmice()
         self.prikazi_tablicu()
         self.prikazi_rezultate_kola()
@@ -423,15 +432,15 @@ class LigaAplikacija:
 
 
     def resetiraj_ligu(self):
-        # Očisti sve podatke osim klubova
+        # Očisti sve
         self.kalendar = []
         self.datumi = []
         self.trenutno_kolo = 0
         self.odigrano_u_kolu.clear()
         self.rezultati_utakmica.clear()
-        self.praznici = []  # Očisti razdoblja pauze
+        self.praznici = []
 
-        # Resetiraj statistiku klubova
+        # Resetiraj statistiku
         for klub in self.klubovi:
             self.statistika[klub] = {"bodovi": 0, "gol_razlika": 0, "zabijeni": 0, "primljeni": 0, "odigrane_utakmice": 0}
 
@@ -444,18 +453,17 @@ class LigaAplikacija:
             return
 
         samo_vikendom = messagebox.askyesno("Raspored datuma", "Želite li da se utakmice igraju samo vikendom?")
+        self.unesi_praznike()
         self.kalendar = self.generiraj_kalendar()
         self.datumi = self.generiraj_datume(len(self.kalendar), samo_vikendom)
         self.trenutno_kolo = 1
 
-        # Ažuriraj korisničko sučelje
         self.prikazi_tablicu()
         self.prikazi_utakmice()
         self.prikazi_rezultate_kola()
 
         self.btn_pocni_ligu.config(state="disabled")
 
-        # Osvježi prikaz pauza
         self.prikazi_pauze()
 
         messagebox.showinfo("Nova sezona", "Nova sezona je započela!")
@@ -474,7 +482,7 @@ class LigaAplikacija:
         prozor.geometry("400x500")
         prozor.configure(bg="#9fbd9d")
         prozor.transient(self.root)  # Veže prozor za glavni prozor
-        prozor.grab_set()  # Onemogućuje interakciju s glavnim prozorom dok je ovaj otvoren
+        prozor.grab_set()  # Onemogućuje glavni prozor dok je ovaj otvoren
 
         # Prikaz naziva kluba
         lbl_naziv = tb.Label(prozor, text=f"Klub: {klub}", font=("Helvetica", 16, "bold"), background="#9fbd9d")
@@ -519,7 +527,7 @@ class LigaAplikacija:
             if odabrani:
                 vrijednosti = self.tablica.item(odabrani, "values")
                 if vrijednosti:
-                    klub = vrijednosti[1]  # Druga kolona je naziv kluba
+                    klub = vrijednosti[1]
                     self.prikazi_detalje_kluba(klub)
 
         self.tablica.bind("<Double-1>", on_double_click)
@@ -528,10 +536,9 @@ class LigaAplikacija:
 
 
 
-    #funkcija za odabir utakmice preko gubova
+    #funkcija za odabir utakmice preko gumbova
 
     def odaberi_utakmicu(self, domacin, gost):
-        # Resetiraj boje svih gumba osim trenutno odabranog
         for (d, g), gumb in self.gumbovi_utakmica.items():
             if (d, g) in self.odigrano_u_kolu:
                 gumb.config(bg="gray", state="disabled")  # Iskoristene utakmice postaju sive i neaktivne
@@ -603,7 +610,7 @@ class LigaAplikacija:
 
         # Ažuriraj gumb za utakmicu
         if (self.klub1, self.klub2) in self.gumbovi_utakmica:
-            self.gumbovi_utakmica[(self.klub1, self.klub2)].config(bg="gray", state="disabled")  # Zasivi gumb
+            self.gumbovi_utakmica[(self.klub1, self.klub2)].config(bg="gray", state="disabled")
 
         # Ažuriraj rezultate tekućeg kola
         self.prikazi_rezultate_kola()
@@ -612,7 +619,7 @@ class LigaAplikacija:
 
         # Provjeri je li kolo završeno
         if self.odigrano_u_kolu == set(self.kalendar[self.trenutno_kolo - 1]):
-            self.prikazi_progress_bar()  # Prikaži progress bar prije prelaska na iduće kolo
+            self.prikazi_progress_bar()  
 
 
 
@@ -652,14 +659,13 @@ class LigaAplikacija:
     #funkcija za prikazivanje tablice, sortira klubove po bodovima i gol razlici
 
     def prikazi_tablicu(self):
-        # Očisti prethodne podatke iz tablice
         for item in self.tablica.get_children():
             self.tablica.delete(item)
 
         # Sortiraj klubove po bodovima i gol razlici
         sortirano = sorted(self.statistika.items(), key=lambda x: (-x[1]["bodovi"], -x[1]["gol_razlika"]))
 
-        # Dodaj podatke u tablicu s rednim brojevima
+        # Dodaj podatke u tablicu
         for pozicija, (klub, stats) in enumerate(sortirano, start=1):
             self.tablica.insert("", "end", values=(
                 pozicija, 
@@ -687,7 +693,7 @@ class LigaAplikacija:
 
         # Generiraj sve moguće parove (domaćin, gost)
         svi_parovi = [(domacin, gost) for domacin in klubovi for gost in klubovi if domacin != gost]
-        random.shuffle(svi_parovi)  # Nasumično promiješaj parove
+        random.shuffle(svi_parovi) 
 
         # Skup za praćenje svih odigranih utakmica
         odigrani_matchupi = set()
@@ -715,7 +721,6 @@ class LigaAplikacija:
                         break
 
                 if valjani_par is None:
-                    # Ako nema valjanih parova, prekini petlju
                     break
 
                 # Dodaj valjani par u kolo
@@ -777,9 +782,9 @@ class LigaAplikacija:
                     subota = danas if danas.weekday() == 5 else danas + timedelta(days=(5 - danas.weekday()))
                     nedjelja = subota + timedelta(days=1)
 
-                    # Provjeri je li cijelo kolo unutar prazničnih raspona
+                    # Provjeri je li cijelo kolo unutar praznika
                     if any(pocetni <= subota <= zavrsni or pocetni <= nedjelja <= zavrsni for pocetni, zavrsni in self.praznici):
-                        danas = nedjelja + timedelta(days=1)  # Pomakni na prvi dan nakon nedjelje
+                        danas = nedjelja + timedelta(days=1)  # Pomakni na prvi ponedjeljak
                         continue
                     break
 
